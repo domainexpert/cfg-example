@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Soot Tests" default="compile" basedir=".">
+	<description>
+    Build file for examples from "A Survivor's Guide to Java Program Analysis in Soot"
+  </description>
+
+	<!-- set global properties for this build -->
+	<property name="src.dir" location="src"/>
+	<property name="build.dir" location="build"/>
+	<property name="soot.output.dir" location="soot_output"/>
+	<property name="lib.dir" location="lib"/>
+	<property name="jdk.lib.dir" location="/usr/lib/jvm/java-7-openjdk-amd64/jre/lib"/>
+		
+	<!-- Soot library paths -->
+	<path id="soot.lib">
+		<pathelement path="${lib.dir}/soot-trunk.jar"/>
+		<pathelement path="${build.dir}"/>
+	</path>
+
+	<!-- Java library paths -->
+	<path id="jre.lib">
+		<pathelement path="${jdk.lib.dir}/rt.jar"/>
+		<pathelement path="${jdk.lib.dir}/javazic.jar"/>
+		<pathelement path="${jdk.lib.dir}/resources.jar"/>
+		<pathelement path="${jdk.lib.dir}/rhino.jar"/>
+		<pathelement path="${jdk.lib.dir}/jce.jar"/>
+		<pathelement path="${jdk.lib.dir}/jsse.jar"/>
+		<pathelement path="${jdk.lib.dir}/management-agent.jar"/>
+	</path>
+
+	<!-- The value of -soot-class-path -->
+	<path id="soot.class.path">
+		<path refid="jre.lib"/>
+		<path refid="soot.lib"/>
+	</path>
+		
+	<target name="init">
+		<!-- Create the time stamp -->
+		<tstamp/>
+		
+		<!-- Create the build directory structure used by compile -->
+		<mkdir dir="${build.dir}"/>
+		
+		<!-- Create the Soot output directory -->
+		<mkdir dir="${soot.output.dir}"/>
+	</target>
+
+	<target name="compile" depends="init"
+        description="compile the source">
+		<!-- Compile the own-made programs -->
+		<javac srcdir="${src.dir}" destdir="${build.dir}" includeantruntime="false"
+			deprecation="on">
+			<classpath refid="soot.lib"/>
+		</javac>
+		
+	</target>
+	
+  <!-- This runs the CFG traversal -->
+  <target name="run" depends="compile"
+           description="run CFG traversal">
+           <java classname="org.domainexpert.Main">
+                   <classpath refid="soot.lib"/>
+                   <arg value="-f"/>
+           	       <arg value="J"/>
+                   <arg value="-soot-class-path"/>
+                   <arg pathref="soot.class.path"/>
+                   <arg value="-output-dir"/>
+                   <arg value="${soot.output.dir}"/>
+                   <arg value="org.domainexpert.PathExplorer"/>
+           </java> 
+   </target>
+
+	<target name="clean"
+        description="clean up">
+		<!-- Delete the build and Soot output directory trees -->
+		<delete dir="${build.dir}"/>
+		<delete dir="${soot.output.dir}"/>
+	</target>
+
+	<target name="soot-options">
+		<java className="soot.Main">
+			<classpath>
+				<path refid="soot.lib"/>
+			</classpath>
+			<arg value="-help"/>
+		</java>
+	</target>
+</project>
