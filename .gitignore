@@ -1,5 +1,6 @@
 /bin
 /build
 /soot_output
+/lib/soot-trunk.jar
 # Eclipse settings
 /.settings
